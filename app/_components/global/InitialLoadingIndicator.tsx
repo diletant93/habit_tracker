@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
+import Loader from "./Loader";
 
 export default function InitialLoadingIndicator() {
     const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -8,8 +9,6 @@ export default function InitialLoadingIndicator() {
     }, []);
     if (!isLoading) return null
     return (
-        <div className="fixed inset-0 flex justify-center items-center">
-            <p className="text-2xl uppercase">initi!!!!al loa!!ding</p>
-        </div>
+        <Loader/>
     );
 }
