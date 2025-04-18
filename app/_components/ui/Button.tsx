@@ -16,7 +16,7 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                blue: 'bg-blue text-white-850',
+                blue: 'bg-blue-600 text-white-850',
                 white: 'bg-white-800 text-dark-800'
             },
             size: {
