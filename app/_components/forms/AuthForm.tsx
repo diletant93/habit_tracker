@@ -60,7 +60,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="shadcn" {...field} className="shadcn-input" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -74,7 +74,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input placeholder="shadcn" {...field} className="shadcn-input" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,9 +83,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
         )}
         {mode === 'sign-up' && <PolicyConsent isChecked={isPrivacyPolicyChecked} onCheck={() => setPrivacyPolicyChecked(!isPrivacyPolicyChecked)} />}
         <Button variant="blue" size="big" className="mt-2">{mode === 'sign-in' ? 'Log in' : 'Get started'}</Button>
-        <Link href={'/REPLACE_WITH_ACTUAL_ROUTE'} className="mx-auto text-dark-800 font-medium tracking-wide">
-          Forgot password?
-        </Link>
+        {mode === 'sign-in' && (
+          <Link href={'/REPLACE_WITH_ACTUAL_ROUTE'} className="mx-auto text-dark-800 font-medium tracking-wide">
+            Forgot password?
+          </Link>
+        )}
       </form>
     </Form>
 

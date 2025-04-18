@@ -11,35 +11,6 @@ body {
   font-family: var(--font-rubik);
 }
 @layer theme, base, components, utilities;
-@theme {
-  /* Colors */
-  --color-facebook:#7583CA;
-
-  --color-white-800:#EBEAEC;
-  --color-white-850:#F6F1FB;
-  
-  --color-creamy-300:#FFECCC;
-
-  --color-dark-800:#3F414E;
-
-  --color-grey-300:#A1A4B2;
-  --color-grey-400:#737373;
-
-  --color-blue-300:#9DCEFF;
-  --color-blue-500:#92A3FD;
-  --color-blue-600:#8E97FD;
-  --color-blue-700:#7583CA;
-
-  /* font sizes */
-  --text-xs: 0.6875rem;   /* 11px */
-  --text-sm: 0.8125rem;   /* 13px */
-  --text-base: 0.875rem;  /* 14px */
-  --text-md: 1rem;        /* 16px */
-  --text-lg: 1.5rem;      /* 24px */
-  --text-lg-md:1.75rem;
-  --text-xl: 1.875rem;    /* 30px */
-
-}
 
 @theme inline {
   --radius-sm:calc(var(--radius) - 4px);
@@ -78,7 +49,31 @@ body {
   --color-sidebar-border:var(--sidebar-border);
   --color-sidebar-ring:var(--sidebar-ring);
 
-  
+  --color-facebook: var(--color-facebook);
+
+  --color-white-800: var(--color-white-800);
+  --color-white-850: var(--color-white-850);
+
+  --color-creamy-300: var(--color-creamy-300);
+
+  --color-dark-800: var(--color-dark-800);
+
+  --color-grey-200: var(--color-grey-200);
+  --color-grey-300: var(--color-grey-300);
+  --color-grey-400: var(--color-grey-400);
+
+  --color-blue-300: var(--color-blue-300);
+  --color-blue-500: var(--color-blue-500);
+  --color-blue-600: var(--color-blue-600);
+  --color-blue-700: var(--color-blue-700);
+
+  --text-xs: var(--text-xs);
+  --text-sm: var(--text-sm);
+  --text-base: var(--text-base);
+  --text-md: var(--text-md);
+  --text-lg: var(--text-lg);
+  --text-lg-md: var(--text-lg-md);
+  --text-xl: var(--text-xl);
 }
 
 :root {
@@ -115,7 +110,31 @@ body {
   --sidebar-border:oklch(0.922 0 0);
   --sidebar-ring:oklch(0.708 0 0);
 
-  
+  --color-facebook: #7583CA;
+
+  --color-white-800: #EBEAEC;
+  --color-white-850: #F6F1FB;
+
+  --color-creamy-300: #FFECCC;
+
+  --color-dark-800: #3F414E;
+
+  --color-grey-200:#F2F3F7;
+  --color-grey-300: #A1A4B2;
+  --color-grey-400: #737373;
+
+  --color-blue-300: #9DCEFF;
+  --color-blue-500: #92A3FD;
+  --color-blue-600: #8E97FD;
+  --color-blue-700: #7583CA;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.5rem;
+  --text-lg-md: 1.75rem;
+  --text-xl: 1.875rem;
 
 }
 
@@ -165,7 +184,17 @@ body {
 }
 @layer components{
   .shadcn-input{
-    background-color: red !important;
+    background-color: var(--color-grey-200) !important;
+    border: none !important;
+    padding: 1.55rem 1.25rem !important;
+    color: var(--color-dark-800);
+    letter-spacing: .3px;
+  }
+  .shadcn-input::placeholder{
+    color:var(--color-grey-300) !important;
+    line-height: 108% !important;
+    font-weight: 200 !important;
+    letter-spacing: .5px;
   }
 }
 @utility flex-center {

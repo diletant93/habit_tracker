@@ -19,7 +19,7 @@ export default async function AuthPage({ params }: AuthPageProps) {
                 {mode === 'sign-in' ? 'Welcome back!' : 'Create your account'}
             </H2>
             <SocialLogin />
-            <p className="my-10 uppercase text-center text-grey-300 text-base font-semibold tracking-wider">
+            <p className="my-10  uppercase text-center text-grey-300 text-base font-semibold tracking-wider">
                 {mode === 'sign-in' ? 'Or Log In with email' : 'Or Create with email'}
             </p>
             <AuthForm mode={mode} />
