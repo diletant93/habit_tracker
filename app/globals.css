@@ -158,6 +158,11 @@ body {
     justify-content: center;
     align-items: center;
 }
+@utility position-center{
+  top: 50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+}
 @utility p-container{
   padding:0 20px 0 20px;
 }

@@ -12,7 +12,7 @@ export default function Button({ variant, size, className, ...props }: ButtonPro
 }
 
 const buttonVariants = cva(
-    'py-4 px-3 uppercase rounded-full cursor-pointer hover:brightness-90',
+    'py-[1.2rem] px-3 uppercase font-medium rounded-full cursor-pointer hover:brightness-90',
     {
         variants: {
             variant: {
