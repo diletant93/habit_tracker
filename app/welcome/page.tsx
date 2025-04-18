@@ -38,7 +38,7 @@ export default function Welcome() {
                 </div>
             </div>
             <div className="p-container w-full pt-20 pb-2 bg-[#8C96FF] grow z-10 flex-center">
-                <Link href="/auth/sign-in" className="w-full">
+                <Link href="/sign-in" className="w-full">
                     <Button variant="white">Get Started</Button>
                 </Link>
             </div>
