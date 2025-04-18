@@ -1,7 +1,7 @@
 type AuthFormProps = {
-    type:'sign-in' | 'sign-up'
+    mode:'sign-in' | 'sign-up'
 }
-export default function AuthForm({type}:AuthFormProps) {
+export default function AuthForm({mode}:AuthFormProps) {
   return (
     <div>
        AuthForm

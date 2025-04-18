@@ -1,7 +1,9 @@
-type H1Props = React.HTMLAttributes<HTMLHeadingElement> & {
+import { cn } from "@/lib/utils"
+
+type H2Props = React.HTMLAttributes<HTMLHeadingElement> & {
     variant?: 'white' | 'dark'
 }
 
-export default function H1({ variant, ...props }: H1Props) {
-    return <h2 {...props} className="text-lg-md text-dark-800"></h2>
+export default function H2({ variant, className, ...props }: H2Props) {
+    return <h2 {...props} className={`text-lg-md font-semibold  text-dark-800 ${className}`}></h2>
 }

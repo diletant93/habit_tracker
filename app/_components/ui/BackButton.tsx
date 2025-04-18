@@ -23,7 +23,7 @@ const backButtonVariants = cva(
     {
         variants: {
             variant: {
-                small: 'py-4 px-4 border border-black rounded-full',
+                small: 'py-3 px-3.5 rounded-lg',
                 big: 'py-4 px-4 border border-white-800 rounded-full'
             }
         },
