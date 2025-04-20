@@ -15,6 +15,8 @@ import Button from "../ui/Button"
 import PolicyConsent from "../global/PolicyConsent"
 import { useState } from "react"
 import Link from "next/link"
+import { AuthMode } from "@/app/types/auth"
+import { getCurrentSchema, getDefaultValues, SignInSchema, SignUpSchema } from "@/app/_validationSchemas/auth"
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -23,51 +25,24 @@ const formSchema = z.object({
 
 
 type AuthFormProps = {
-  mode: 'sign-in' | 'sign-up'
+  mode: AuthMode
 }
 export default function AuthForm({ mode }: AuthFormProps) {
-  const [isPrivacyPolicyChecked, setPrivacyPolicyChecked] = useState<boolean>(() => mode === 'sign-in')
-  const form = useForm<z.infer<typeof formSchema>>({
+  const formSchema = getCurrentSchema(mode)
+  const defaultValues = getDefaultValues(mode)
+
+  const form = useForm<SignInSchema | SignUpSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
-    },
+    defaultValues,
   })
-  console.log({ mode })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-
     console.log(values)
   }
   return (
     <Form {...form} >
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Email address" {...field} className="shadcn-input" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} className="shadcn-input" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         {mode === 'sign-up' && (
-
           <FormField
             control={form.control}
             name="username"
@@ -81,7 +56,50 @@ export default function AuthForm({ mode }: AuthFormProps) {
             )}
           />
         )}
-        {mode === 'sign-up' && <PolicyConsent isChecked={isPrivacyPolicyChecked} onCheck={() => setPrivacyPolicyChecked(!isPrivacyPolicyChecked)} />}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Email address" {...field} className="shadcn-input" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="shadcn" {...field} className="shadcn-input" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {mode === 'sign-up' && (
+          <FormField
+            control={form.control}
+            name="privacyConsent"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <PolicyConsent
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    ref={field.ref}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <Button variant="blue" size="big" className="mt-2">{mode === 'sign-in' ? 'Log in' : 'Get started'}</Button>
         {mode === 'sign-in' && (
           <Link href={'/REPLACE_WITH_ACTUAL_ROUTE'} className="mx-auto text-dark-800 font-medium tracking-wide">
