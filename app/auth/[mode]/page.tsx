@@ -23,7 +23,7 @@ export default async function AuthPage({ params }: AuthPageProps) {
                 {mode === 'sign-in' ? 'Or Log In with email' : 'Or Create with email'}
             </p>
             <AuthForm mode={mode} />
-            <p className="text-base text-grey-300 uppercase tracking-wider text-center font-medium mt-auto pb-10 py-1 px-0.5">
+            <p className="text-base text-grey-300 uppercase tracking-wider text-center font-medium mt-auto pb-10 pt-4 px-0.5">
                 {mode === 'sign-in' && <>Don't have an account? <Link href={'/auth/sign-up'} className="text-blue-700">Sign up</Link></>}
                 {mode === 'sign-up' && <>Already have an account? <Link href={'/auth/sign-in'} className="text-blue-700">Sign in</Link></>}
             </p>

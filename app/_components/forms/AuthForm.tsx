@@ -40,6 +40,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
     criteriaMode: 'all'
   })
   const { error: usernameError } = form.getFieldState('username')
+  const {error:privacyConsentError} = form.getFieldState('privacyConsent')
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
@@ -140,9 +141,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
                     onChange={field.onChange}
                     onBlur={field.onBlur}
                     ref={field.ref}
+                    isError={privacyConsentError !== undefined}
                   />
                 </FormControl>
-                <FormMessage />
+                
               </FormItem>
             )}
           />
