@@ -13,16 +13,10 @@ import {
 import { Input } from "@/components/ui/input"
 import Button from "../ui/Button"
 import PolicyConsent from "../global/PolicyConsent"
-import { useState } from "react"
 import Link from "next/link"
 import { AuthMode } from "@/app/types/auth"
 import { getCurrentSchema, getDefaultValues, SignInSchema, SignUpSchema } from "@/app/_validationSchemas/auth"
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-})
-
+import CheckSuccess from "../ui/CheckSuccess"
 
 type AuthFormProps = {
   mode: AuthMode
@@ -30,10 +24,10 @@ type AuthFormProps = {
 export default function AuthForm({ mode }: AuthFormProps) {
   const formSchema = getCurrentSchema(mode)
   const defaultValues = getDefaultValues(mode)
-
-  const form = useForm<SignInSchema | SignUpSchema>({
+  const form = useForm<SignUpSchema | SignInSchema>({
     resolver: zodResolver(formSchema),
     defaultValues,
+    mode: 'all'
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -47,7 +41,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
             control={form.control}
             name="username"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="relative">
+                <CheckSuccess className="absolute right-3 -translate-y-1/2 top-[58%]" isShown={!form.formState.errors} />
                 <FormControl>
                   <Input placeholder="shadcn" {...field} className="shadcn-input" />
                 </FormControl>
@@ -60,7 +55,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="relative">
+              <CheckSuccess className="absolute right-3 -translate-y-1/2 top-[58%]" isShown={!form.formState.errors.email} />
               <FormControl>
                 <Input placeholder="Email address" {...field} className="shadcn-input" />
               </FormControl>
@@ -72,7 +68,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="relative">
+              <CheckSuccess className="absolute right-3 -translate-y-1/2 top-[58%]" isShown={!form.formState.errors.password} />
               <FormControl>
                 <Input placeholder="shadcn" {...field} className="shadcn-input" />
               </FormControl>
