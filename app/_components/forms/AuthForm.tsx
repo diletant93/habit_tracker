@@ -22,17 +22,21 @@ type AuthFormProps = {
   mode: AuthMode
 }
 export default function AuthForm({ mode }: AuthFormProps) {
+
   const formSchema = getCurrentSchema(mode)
   const defaultValues = getDefaultValues(mode)
+
   const form = useForm<SignUpSchema | SignInSchema>({
     resolver: zodResolver(formSchema),
     defaultValues,
-    mode: 'all'
+    mode:'onBlur'
   })
+  const { error: usernameError } = form.getFieldState('username')
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
   }
+
   return (
     <Form {...form} >
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -42,7 +46,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             name="username"
             render={({ field }) => (
               <FormItem className="relative">
-                <CheckSuccess className="absolute right-3 -translate-y-1/2 top-[58%]" isShown={!form.formState.errors} />
+                <CheckSuccess className="absolute right-3 -translate-y-1/2 top-[58%]" isShown={usernameError === undefined && field.value.trim() != ''} />
                 <FormControl>
                   <Input placeholder="shadcn" {...field} className="shadcn-input" />
                 </FormControl>
@@ -56,7 +60,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem className="relative">
-              <CheckSuccess className="absolute right-3 -translate-y-1/2 top-[58%]" isShown={!form.formState.errors.email} />
+              <CheckSuccess className="absolute right-3 -translate-y-1/2 top-[58%]" isShown={!form.formState.errors.email && field.value.trim() != ''} />
               <FormControl>
                 <Input placeholder="Email address" {...field} className="shadcn-input" />
               </FormControl>
@@ -68,8 +72,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem className="relative">
-              <CheckSuccess className="absolute right-3 -translate-y-1/2 top-[58%]" isShown={!form.formState.errors.password} />
+            <FormItem>
               <FormControl>
                 <Input placeholder="shadcn" {...field} className="shadcn-input" />
               </FormControl>
