@@ -1,7 +1,4 @@
 "use client"
-
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
 import { z } from "zod"
 import {
   Form,
@@ -15,51 +12,22 @@ import Button from "../ui/Button"
 import PolicyConsent from "../global/PolicyConsent"
 import Link from "next/link"
 import { AuthMode } from "@/app/types/auth"
-import { getCurrentSchema, getDefaultValues, SignInSchema, SignUpSchema } from "@/app/_validationSchemas/auth"
 import CheckSuccess from "../ui/CheckSuccess"
-import { MouseEvent, useState } from "react"
 import VisibilityToggle from "../ui/VisibilityToggle"
+import { useAuthForm } from "@/app/_hooks/useAuthForm"
 
 type AuthFormProps = {
   mode: AuthMode
 }
-function isSignUpSchema(defaultValues: SignInSchema | SignUpSchema): defaultValues is SignUpSchema {
-  return (defaultValues as SignUpSchema)?.username !== undefined
-}
+
 export default function AuthForm({ mode }: AuthFormProps) {
 
-  const formSchema = getCurrentSchema(mode)
-  const defaultValues = getDefaultValues(mode)
-
-  const [passwordInputType, setPasswordInputType] = useState<'text' | 'password'>('password')
-
-  const form = useForm<SignUpSchema | SignInSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues,
-    mode: 'onChange',
-    criteriaMode: 'all'
-  })
-  const { error: usernameError } = form.getFieldState('username')
-  const {error:privacyConsentError} = form.getFieldState('privacyConsent')
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-  }
-  function handleVisibleToggle(e: MouseEvent<HTMLButtonElement>) {
-    setPasswordInputType(curr => curr === 'password' ? 'text' : 'password')
-  }
-  const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const name = e.target.name;
-
-    form.setValue(name as any, value);
-
-    if (value.trim() === '') {
-      form.clearErrors(name as any);
-    } else {
-      form.trigger(name as any);
-    }
-  };
+  const {
+    form, onSubmit,
+    usernameError, privacyConsentError,
+    handleFieldChange, handleVisibleToggle,
+    passwordInputType,
+  } = useAuthForm(mode)
 
   return (
     <Form {...form} >
@@ -144,7 +112,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                     isError={privacyConsentError !== undefined}
                   />
                 </FormControl>
-                
+
               </FormItem>
             )}
           />

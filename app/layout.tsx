@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import {Rubik } from "next/font/google";
+import { Rubik } from "next/font/google";
 import "./globals.css";
 import InitialLoadingIndicator from "./_components/global/InitialLoadingIndicator";
+import Providers from "./_components/providers/Providers";
 
 const rubik = Rubik({
-  variable:'--font-rubik',
-  subsets:['latin']
+  variable: '--font-rubik',
+  subsets: ['latin']
 })
 
 export const metadata: Metadata = {
@@ -23,8 +24,9 @@ export default function RootLayout({
       <body
         className={`${rubik.variable} antialiased w-full`}
       >
-        <InitialLoadingIndicator/>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
