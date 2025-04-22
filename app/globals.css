@@ -196,6 +196,12 @@ body {
     font-weight: 200 !important;
     letter-spacing: .5px;
   }
+  .form-item-icon{
+    position: absolute;
+    top: 58%;
+    right: .8rem;
+    transform: translateY(-50%);
+  }
 }
 @utility flex-center {
     display: flex;

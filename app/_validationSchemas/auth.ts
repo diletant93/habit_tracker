@@ -11,9 +11,10 @@ const signInValidationSchema = z.object({
 const signUpValidationSchema = z.object({
     ...base,
     username:z.string({ required_error: 'Provide a name' })
-    .min(2, 'Name must be at least 2 characters')
+    .min(2,'Name must be 2 characters at least')
     .max(50, 'Name must not exceed 50 characters')
-    .regex(/^[a-zA-Zà-žÀ-Ž' -]+$/, 'Name can only include a-Z - ,'),
+    .regex(/^[a-zA-Zà-žÀ-Ž' -]+$/, 'Name can only include a-Z - ,')
+    ,
     password: z.string({ required_error: 'Provide a password' })
     .trim()
     .min(8, 'Password must be at least 8 characters')
