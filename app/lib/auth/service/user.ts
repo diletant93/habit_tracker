@@ -3,7 +3,7 @@ import { RoleRecord, roleSchema, userRoleJoinSchema } from "@/app/_validationSch
 import { UserRecord, userSchema, UserToCreate } from "@/app/_validationSchemas/user";
 import { validateApiResponse } from "@/app/_validationSchemas/utils";
 import { ActionResponse } from "@/app/types/actions";
-import supabase from "@/lib/supabase";
+import supabase from "@/app/lib/supabase";
 import { z } from "zod";
 import { getRoleByName } from "./role";
 import { getOrganizationByName } from "./organization";
@@ -12,8 +12,7 @@ import { ensureAllSuccess, handleErrors } from "@/app/_utils/errorHandlers";
 
 export async function userExists(email:string):Promise<ActionResponse<boolean>>{
     try {
-        const {data, error} = await supabase.from('users').select('id').eq('email',email).single()
-        if(error) return {status:'error', message:'Error while checking if user exists'}
+        const {data} = await supabase.from('users').select('id').eq('email',email).single()
         return {status:'success', data:Boolean(data)}
     } catch (error) {
         return handleErrors(error, {defaultError:'Unexpected error checking user existance'})
@@ -30,7 +29,10 @@ export async function createUser(userData: UserToCreate):Promise<ActionResponse<
         if(createdUserError || !data) return {status:'error', message:'Error while creating a new user'}
         
         const validatedCreatedUserResponse = validateApiResponse(userSchema, data)
-        if(validatedCreatedUserResponse.status === 'error') return validatedCreatedUserResponse
+        if(validatedCreatedUserResponse.status === 'error'){
+            const deleteUserResponse = await deleteUser({id:(data as {id:string}).id})
+            return deleteUserResponse.status === 'error' ? deleteUserResponse : validatedCreatedUserResponse
+        }
 
         const validatedCreatedUser = validatedCreatedUserResponse.data
 
@@ -56,7 +58,7 @@ export async function createUser(userData: UserToCreate):Promise<ActionResponse<
 export async function createUserRoleOrganization(
     userId:string, 
     roleName:string = 'user', 
-    organizationName:string = 'organization'
+    organizationName:string = 'google'
     ):Promise<ActionResponse>{
     try {
         const [getRoleResponse, getOrganizationResponse] = await Promise.all([
@@ -130,9 +132,10 @@ export async function getRolesByUserId(userId:string):Promise<ActionResponse<Rol
 
 export async function getPermissionsByUserId(userId:string):Promise<ActionResponse<PermissionRecord[]>>{
     try {
-        const {data:rawUserPermissionsJoin, error:rawUserPermissionsJoinError} = await supabase.from('users_roles_organizations').select('roles_permissions(permission_id, permissions(*))').eq('user_id',userId)
-        if(rawUserPermissionsJoinError) return {status:'error', message:'Failed fetching user permissions'}
-
+        //get first all the role ids
+        //then go through the roles_permissions table and join the permission_ids with permission based on role_ids
+        const {data:rawUserPermissionsJoin} = await supabase.from('users_roles_organizations').select('role_id, roles_permissions (permission_id, permissions(*))').eq('user_id',userId)
+        console.log('HERE =>>>>>>>>>>>>>>>>>>>>>>>', rawUserPermissionsJoin)
         const validatedUserPermissionJoinResponse = validateApiResponse(z.array(userPermissionsJoinSchema), rawUserPermissionsJoin)
         if(validatedUserPermissionJoinResponse.status === 'error') return validatedUserPermissionJoinResponse
 

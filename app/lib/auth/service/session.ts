@@ -1,9 +1,9 @@
 import { SessionRecord, sessionSchema } from "@/app/_validationSchemas/session";
 import { ActionResponse } from "@/app/types/actions";
-import { deleteUser, getOrganizationsByUserId, getPermissionsByUserId, getRolesByUserId, getUserContext } from "./user";
+import { deleteUser ,getUserContext } from "./user";
 import { generateSecretKey } from "../crypto";
-import { ensureAllSuccess, handleErrors } from "@/app/_utils/errorHandlers";
-import supabase from "@/lib/supabase";
+import { handleErrors } from "@/app/_utils/errorHandlers";
+import supabase from "@/app/lib/supabase";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { COOKIE_SESSION_ID_KEY, SESSION_EXPIRE_SECONDS } from "@/app/_constants/session";
@@ -20,7 +20,7 @@ export async function createSession(user: {id:string}):Promise<ActionResponse<Se
         const roleNames = roles.map(role => role.name)
         const organizationNames = organizations.map(organization => organization.name)
         const permissionNames = permissions.map(permission => permission.name)
-        
+
 
         const sessionId = generateSecretKey()
 

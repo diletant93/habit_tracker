@@ -10,6 +10,7 @@ export function useActionToast(){
                 break;
             case 'error':
                 toast.error(message ?? 'Error')
+                break;
             default:
                 toast.info(`Unexpected response. Status:${status}`)
                 break;

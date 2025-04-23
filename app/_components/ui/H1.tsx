@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 
 type H1Props = React.HTMLAttributes<HTMLHeadingElement> & {
     variant?: 'white' | 'dark';

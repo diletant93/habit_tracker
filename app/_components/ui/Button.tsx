@@ -1,5 +1,5 @@
 import { cva } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
     variant?: 'blue' | 'white',
     size?: 'big' | 'medium' | 'small'

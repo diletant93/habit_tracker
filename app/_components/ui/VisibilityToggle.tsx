@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/lib/utils';
 import Eye from '@/public/svgs/half_eye.svg'
 import { MouseEvent } from 'react';
 type VisibilityToggleProps = {

@@ -8,6 +8,7 @@ import { useActionToast } from "./useActionToast";
 import { signIn, signUp } from "../actions/auth";
 import { ActionResponse } from "../types/actions";
 import { useRouter } from "next/navigation";
+import { useHandleResponse } from "./useHandleResponse";
 
 
 function isSignUp(values:SignUpSchema | SignInSchema): values is SignUpSchema{
@@ -26,9 +27,7 @@ export function useAuthForm(mode: AuthMode){
         mode: 'onChange',
         criteriaMode: 'all'
       })
-
-      const {actionToast} = useActionToast()
-      const router = useRouter()
+      const {handleResponse} = useHandleResponse()
 
       const { error: usernameError } = form.getFieldState('username')
       const {error:privacyConsentError} = form.getFieldState('privacyConsent')
@@ -40,10 +39,7 @@ export function useAuthForm(mode: AuthMode){
         }else{
             response = await signIn(values)
         }
-        actionToast(response)
-        if(response.status === 'success'){
-            router.push('/')
-        }
+        handleResponse(response , {redirectTo:'/'})
       }
     
       function handleVisibleToggle(e:MouseEvent<HTMLButtonElement>) {

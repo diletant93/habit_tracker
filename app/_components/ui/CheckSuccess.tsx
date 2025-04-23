@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/lib/utils';
 import CheckSuccessIcon from '@/public/svgs/check_success.svg'
 
 type CheckSuccess = {

@@ -1,10 +1,10 @@
-import supabase from "@/lib/supabase";
+'use server'
 import { SignInSchema, SignUpSchema } from "../_validationSchemas/auth";
 import { ActionResponse } from "../types/actions";
 import { handleErrors } from "../_utils/errorHandlers";
-import { createUser } from "@/lib/auth/service/user";
-import { generateSecretKey, hashPassword } from "@/lib/auth/crypto";
-import { createSession } from "@/lib/auth/service/session";
+import { createUser, deleteUser } from "@/app/lib/auth/service/user";
+import { generateSecretKey, hashPassword } from "@/app/lib/auth/crypto";
+import { createSession } from "@/app/lib/auth/service/session";
 
 export async function signUp({username, email, password, privacyConsent} : SignUpSchema):Promise<ActionResponse>{
     try {
@@ -14,7 +14,10 @@ export async function signUp({username, email, password, privacyConsent} : SignU
         const hashedPassword = await hashPassword(password, salt)
 
         const createdUserResponse = await createUser({name:username, email, password:hashedPassword, salt})
-        if(createdUserResponse.status === 'error') return createdUserResponse
+        if(createdUserResponse.status === 'error') {
+            const deleteReponse = await deleteUser({email})
+            return deleteReponse.status === 'error' ? deleteReponse : createdUserResponse
+        }
         
         const createdUser = createdUserResponse.data
 

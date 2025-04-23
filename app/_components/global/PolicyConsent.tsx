@@ -1,14 +1,14 @@
 import { forwardRef } from "react";
 import Checkbox from "../ui/Checkbox";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 type PolicyConsentProps = {
   name?: string;
   value?: boolean,
-  onChange: (checked:boolean) => void,
+  onChange: (checked: boolean) => void,
   onBlur?: () => void,
-  isError?:boolean,
+  isError?: boolean,
 }
-const PolicyConsent = forwardRef<HTMLInputElement, PolicyConsentProps>(({ name = 'privacyConsent', onChange, value, onBlur , isError = false}, ref) => {
+const PolicyConsent = forwardRef<HTMLInputElement, PolicyConsentProps>(({ name = 'privacyConsent', onChange, value, onBlur, isError = false }, ref) => {
   return (
     <div className="flex justify-between items-center pr-2">
       <p className={cn("text-base text-grey-300 tracking-wider", isError && 'text-red-600')}>i have read the <span className={cn("text-blue-700", isError && 'text-red-600 font-bold')}>Privace Policy</span></p>

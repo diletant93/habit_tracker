@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 
 export default function Container({ className, children }: { className?: string; children: Readonly<React.ReactNode> }) {
     return (
