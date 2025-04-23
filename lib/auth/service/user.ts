@@ -1,6 +1,6 @@
 import { OrganizationRecord, organizationSchema } from "@/app/_validationSchemas/organization";
 import { RoleRecord, roleSchema } from "@/app/_validationSchemas/role";
-import { userSchema, UserToCreate } from "@/app/_validationSchemas/user";
+import { UserRecord, userSchema, UserToCreate } from "@/app/_validationSchemas/user";
 import { validateApiResponse } from "@/app/_validationSchemas/utils";
 import { ActionResponse } from "@/app/types/serverActions";
 import supabase from "@/lib/supabase";
@@ -18,7 +18,7 @@ export async function userExists(email:string):Promise<ActionResponse<boolean>>{
     }
 }
 
-export async function createUser(userData: UserToCreate){
+export async function createUser(userData: UserToCreate):Promise<ActionResponse<UserRecord>>{
     try {
         const userExistsResponse = await userExists(userData.email)
         if(userExistsResponse.status === 'error') return userExistsResponse
@@ -30,18 +30,28 @@ export async function createUser(userData: UserToCreate){
         const validatedCreatedUserResponse = validateApiResponse(userSchema, data)
         if(validatedCreatedUserResponse.status === 'error') return validatedCreatedUserResponse
 
-        const {id:userId} = validatedCreatedUserResponse.data
+        const validatedCreatedUser = validatedCreatedUserResponse.data
 
+        const createUROResponse = await createUserRoleOrganization(validatedCreatedUser.id)
+        if(createUROResponse.status == 'error')  return createUROResponse
+
+        return {
+            status:'success',
+            data:validatedCreatedUser
+        }
 
     } catch (error) {
-        
+        if(error instanceof ZodError){
+            return {status:'error', message:'Failed parsing the created user'}
+        }
+        return {status:'error', message:'Unexpected error checking user existance'}
     }
 }
 
 export async function createUserRoleOrganization(
     userId:string, 
     roleName:string = 'user', 
-    organizationName:string = 'user'
+    organizationName:string = 'organization'
     ):Promise<ActionResponse<void>>{
     try {
         const [getRoleResponse, getOrganizationResponse] = await Promise.all([
