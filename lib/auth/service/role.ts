@@ -1,5 +1,5 @@
 import { RoleRecord, roleSchema } from "@/app/_validationSchemas/role"
-import { ActionResponse } from "@/app/types/serverActions"
+import { ActionResponse } from "@/app/types/actions"
 import supabase from "@/lib/supabase"
 import { ZodError } from "zod"
 

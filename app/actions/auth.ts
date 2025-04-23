@@ -1,6 +1,6 @@
 import supabase from "@/lib/supabase";
 import { SignInSchema, SignUpSchema } from "../_validationSchemas/auth";
-import { ActionResponse } from "../types/serverActions";
+import { ActionResponse } from "../types/actions";
 import { handleErrors } from "../_utils/errorHandlers";
 import { createUser } from "@/lib/auth/service/user";
 import { generateSecretKey, hashPassword } from "@/lib/auth/crypto";
@@ -13,9 +13,15 @@ export async function signUp({username, email, password, privacyConsent} : SignU
         const salt = generateSecretKey()
         const hashedPassword = await hashPassword(password, salt)
 
-        const createdUser = createUser({email, password,salt})
+        const createdUserResponse = await createUser({email, password,salt})
+        if(createdUserResponse.status === 'error') return createdUserResponse
         
-        const createdSession = createSession()
+        const createdUser = createdUserResponse.data
+
+        const createdSessionResponse  =  await createSession(createdUser)
+        if(createdSessionResponse.status === 'error') return createdSessionResponse
+
+        
         return {
             status:'success',
             message:'User was registered',

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useActionToast } from "./useActionToast";
 import { signIn, signUp } from "../actions/auth";
-import { ActionResponse } from "../types/serverActions";
+import { ActionResponse } from "../types/actions";
 import { useRouter } from "next/navigation";
 
 

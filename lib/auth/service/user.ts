@@ -2,13 +2,13 @@ import { OrganizationRecord, organizationSchema, userOrganizationJoinSchema } fr
 import { RoleRecord, roleSchema, userRoleJoinSchema } from "@/app/_validationSchemas/role";
 import { UserRecord, userSchema, UserToCreate } from "@/app/_validationSchemas/user";
 import { validateApiResponse } from "@/app/_validationSchemas/utils";
-import { ActionResponse } from "@/app/types/serverActions";
+import { ActionResponse } from "@/app/types/actions";
 import supabase from "@/lib/supabase";
 import { z } from "zod";
 import { getRoleByName } from "./role";
 import { getOrganizationByName } from "./organization";
 import { PermissionRecord, userPermissionsJoinSchema } from "@/app/_validationSchemas/permission";
-import { handleErrors } from "@/app/_utils/errorHandlers";
+import { ensureAllSuccess, handleErrors } from "@/app/_utils/errorHandlers";
 
 export async function userExists(email:string):Promise<ActionResponse<boolean>>{
     try {
@@ -170,5 +170,35 @@ export async function getOrganizationsByUserId(userId:string):Promise<ActionResp
             defaultError:'Unexpected error while fetching user organizations',
             ZodError:'Failed parsing user organizations',
         })
+    }
+}
+export async function getUserContext(userId:string):Promise<ActionResponse<{
+    roles:RoleRecord[];
+    organizations:OrganizationRecord[];
+    permissions:PermissionRecord[];
+}>>{
+    try {
+        const responses = await Promise.all([
+                    getRolesByUserId(userId),
+                    getOrganizationsByUserId(userId),
+                    getPermissionsByUserId(userId)
+                ]);
+
+        const ensureResponse = ensureAllSuccess(responses)
+        if(ensureResponse.status === 'error') return ensureResponse
+
+        const [rolesResponse, organizationsResponse, permissionsResponse] = ensureResponse.data
+        
+        const roles = rolesResponse.data
+        const organizations = organizationsResponse.data
+        const permissions = permissionsResponse.data
+       
+        return {
+            status:'success',
+            data:{roles, organizations, permissions}
+        }
+        
+    } catch (error) {
+        return handleErrors(error,{defaultError:'Unexpected error while fetching user context'})
     }
 }

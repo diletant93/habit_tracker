@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { ActionToastPayload } from "../types/serverActions";
+import { ActionToastPayload } from "../types/actions";
 
 export function useActionToast(){
     function actionToast (actionResponse: ActionToastPayload){

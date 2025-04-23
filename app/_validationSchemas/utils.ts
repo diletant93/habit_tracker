@@ -1,5 +1,5 @@
 import { z, ZodError } from "zod";
-import { ActionResponse } from "../types/serverActions";
+import { ActionResponse } from "../types/actions";
 
 export function validateApiResponse<T>(schema: z.ZodType<T>, data: unknown):ActionResponse<T>{
     try{    

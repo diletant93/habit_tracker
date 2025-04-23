@@ -1,5 +1,5 @@
 import { OrganizationRecord, organizationSchema } from "@/app/_validationSchemas/organization"
-import { ActionResponse } from "@/app/types/serverActions"
+import { ActionResponse } from "@/app/types/actions"
 import supabase from "@/lib/supabase"
 import { ZodError } from "zod"
 
