@@ -14,3 +14,8 @@ export function handleErrors(error:unknown, errorMessages:ErrorHandlingConfig): 
     }
     return {status:'error', message: errorMessages.defaultError}
 }
+
+export function checkForErrors(responses:ActionResponse<any>[]):ActionResponse | null{
+    const failedResponse = responses.find(response => response.status === 'error')
+    return failedResponse? failedResponse : null
+}   

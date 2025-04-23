@@ -1,0 +1,1 @@
+const SESSION_EXPIRE_SECONDS = 60 * 60 * 24 * 7
