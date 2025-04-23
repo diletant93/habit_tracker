@@ -13,7 +13,7 @@ export async function signUp({username, email, password, privacyConsent} : SignU
         const salt = generateSecretKey()
         const hashedPassword = await hashPassword(password, salt)
 
-        const createdUserResponse = await createUser({email, password,salt})
+        const createdUserResponse = await createUser({name:username, email, password:hashedPassword, salt})
         if(createdUserResponse.status === 'error') return createdUserResponse
         
         const createdUser = createdUserResponse.data
@@ -21,7 +21,7 @@ export async function signUp({username, email, password, privacyConsent} : SignU
         const createdSessionResponse  =  await createSession(createdUser)
         if(createdSessionResponse.status === 'error') return createdSessionResponse
 
-        
+
         return {
             status:'success',
             message:'User was registered',

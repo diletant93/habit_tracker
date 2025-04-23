@@ -11,6 +11,7 @@ export const userSchema = z.object({
 })
 export const userCreationSchema = z.object({
     ...userBaseFields,
+    name:z.string().min(2),
     password:z.string().min(1).nullable(),
     salt:z.string().min(1).nullable(),
 })
