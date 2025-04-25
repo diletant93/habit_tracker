@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { TypeOf, z } from "zod";
 const baseSessionSchema = {
     userId:z.coerce.string().min(1),
     expire:z.string().datetime({offset:true}),
@@ -9,6 +9,7 @@ const baseSessionSchema = {
 }
 
 const coreSessionSchema = z.object(baseSessionSchema)
+const partialCoreSessionSchema = coreSessionSchema.partial()
 
 export const sessionSchema = z.object({
     ...baseSessionSchema,
@@ -23,3 +24,4 @@ export const currentSessionSchema = coreSessionSchema
 export type SessionRecord = z.infer<typeof sessionSchema>
 export type SessionToCreate = z.infer<typeof sessionCreationSchema>
 export type CurrentSession = z.infer<typeof sessionCreationSchema>
+export type SessionToUpdate = z.infer<typeof partialCoreSessionSchema>

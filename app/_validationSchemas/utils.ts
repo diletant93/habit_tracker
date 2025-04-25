@@ -1,5 +1,6 @@
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import { ActionResponse } from "../types/actions";
+import { handleErrors } from "../_utils/errorHandlers";
 
 export function validateApiResponse<T>(schema: z.ZodType<T>, data: unknown):ActionResponse<T>{
     try{    
@@ -11,9 +12,9 @@ export function validateApiResponse<T>(schema: z.ZodType<T>, data: unknown):Acti
 
         return {status:'success', data:result.data}
     }catch(error){
-        if(error instanceof ZodError){
-            return {status:'error', message:`API validation error, schema:${schema._type}`}
-        }
-        return {status:'error', message:'Unexpected error while API validation'}
+        return handleErrors(error, {
+            ZodError:`API validation error, schema:${schema._type}`,
+            defaultError:'Unexpected error while API validation'
+        })
     }
 }   

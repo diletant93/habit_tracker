@@ -1,4 +1,4 @@
-import { CurrentSession, SessionRecord, sessionSchema, SessionToCreate } from "@/app/_validationSchemas/session";
+import { CurrentSession, SessionRecord, sessionSchema, SessionToCreate, SessionToUpdate } from "@/app/_validationSchemas/session";
 import { ActionResponse, SuccessResponse } from "@/app/types/actions";
 import { deleteUser ,getUserContext } from "./user";
 import { generateSecretKey } from "../crypto";
@@ -41,7 +41,7 @@ export async function createSession(user: {id:string}):Promise<ActionResponse<Se
          ] = await Promise.all([ 
             supabase.from('sessions').insert([sessionToCreate]).select('*').single(),
             setCookieSessionId(sessionId),
-            setCookieSessionExpire()
+            setNewCookieSessionExpire()
         ])
 
         if(createdSessionError) {
@@ -74,8 +74,24 @@ export async function createSession(user: {id:string}):Promise<ActionResponse<Se
     }
 
 }
+export async function updateSession(session:SessionToUpdate):Promise<ActionResponse>{
+    try {
+            const sessionIdResponse = await getCookieSessionId()
+            if(sessionIdResponse.status === 'error') return sessionIdResponse
+            const sessionId = sessionIdResponse.data
+            const {data:updatedSession ,error:updatedSessionError} = await supabase.from('sessions').update(session).eq('sessionId',sessionId)
 
-export async function setCookieSessionExpire():Promise<ActionResponse>{
+            if(updatedSessionError) return {status:'error', message:'Could not update session'}
+
+            return {
+                status:'success',
+                data:undefined as never
+            }
+    } catch (error) {
+        return handleErrors(error, {defaultError:'Unexpected error while updating session'})
+    }
+}
+export async function setNewCookieSessionExpire():Promise<ActionResponse>{
     try {
         const cookies = await getCookie()
         cookies.set(
@@ -91,6 +107,7 @@ export async function setCookieSessionExpire():Promise<ActionResponse>{
         return handleErrors(error, {defaultError:'Unexpected error while setting session expire'})
     }
 }
+
 
 export async function setCookieSessionId(sessionId:string):Promise<ActionResponse>{
     try{
@@ -140,7 +157,6 @@ export async function sessionExpired():Promise<ActionResponse<boolean>>{
         return handleErrors(error, {defaultError:'Unexpected error getting session id to cookies'})
     }
 }
-
 export async function deleteSession():Promise<ActionResponse>{
     try {
         const sessionIdResponse = await getCookieSessionId()
