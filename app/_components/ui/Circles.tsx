@@ -52,7 +52,6 @@ export default function Circles({ circlesNumber, initialRadius, incrementRadius,
             aspectRatio:'1/1'
         }}>
             {circles.map(({radius,color,opacity},index)=>{
-                console.log({radius,color,opacity})
                 return <Circle key={index} radius={radius} color={color} opacity={opacity}/>
             })}
         </div>

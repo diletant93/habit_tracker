@@ -1,25 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { COOKIE_SESSION_ID_KEY } from "./app/_constants/session";
-import { deleteSession, sessionExpired } from "./app/lib/auth/service/session";
+import { deleteSession, getCurrentSession, sessionExpired } from "./app/lib/auth/service/session";
 
 export async function middleware(request:NextRequest){
-    const authGateResponse = authGate(request)
-    if(authGateResponse) return authGateResponse
-
+    const authorizedGateResponse = await authorizedGate(request)
+    if(authorizedGateResponse) return authorizedGateResponse
+    
     const handleSessionExpiryResponse = await handleSessionExpiry()
     if(handleSessionExpiryResponse) return handleSessionExpiryResponse
 
 
     return  NextResponse.next()
 }
-
-function authGate(request:NextRequest):NextResponse | null{
-    const url = request.nextUrl.clone()
-    const sessionId = request.cookies.get(COOKIE_SESSION_ID_KEY)?.value
-    
-    const isAuthUrl = url.pathname.startsWith('/auth')
-    
-    if(isAuthUrl && sessionId){
+async function authorizedGate(request: NextRequest):Promise<NextResponse | null>{
+    const isAuthRoute = request.nextUrl.pathname.startsWith('/auth')
+    const sessionResponse = await getCurrentSession()
+    const isAuthenticated = sessionResponse.status === 'success'
+    console.log({sessionResponse, isAuthenticated})
+    if(!isAuthenticated && !isAuthRoute) {
+        const redirectUrl = new URL('/auth/sign-in',request.nextUrl)
+        return NextResponse.redirect(redirectUrl)
+    }
+    if(isAuthenticated && isAuthRoute){
         const redirectUrl = new URL('/',request.nextUrl)
         return NextResponse.redirect(redirectUrl)
     }
@@ -34,9 +35,15 @@ async function handleSessionExpiry():Promise<NextResponse | null>{
 
     const deleteResponse = await deleteSession()
     if(deleteResponse.status==='error') return NextResponse.next()
-
-    return null
+    
+    const redirectUrl = new URL('/auth/sign-in?expired=true')
+    return NextResponse.redirect(redirectUrl)
 }
 export const config={
-    matcher:['/auth/:path*']
+    matcher: [
+        '/',
+        '/welcome',
+
+        '/auth/:path*'
+    ],
 }

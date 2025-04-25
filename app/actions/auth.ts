@@ -4,7 +4,7 @@ import { ActionResponse } from "../types/actions";
 import { handleErrors } from "../_utils/errorHandlers";
 import { createUser, deleteUser, getUser } from "@/app/lib/auth/service/user";
 import { comparePassword, generateSecretKey, hashPassword } from "@/app/lib/auth/crypto";
-import { createSession } from "@/app/lib/auth/service/session";
+import { createSession, deleteSession } from "@/app/lib/auth/service/session";
 
 export async function signUp({username, email, password, privacyConsent} : SignUpSchema):Promise<ActionResponse>{
     try {
@@ -24,8 +24,6 @@ export async function signUp({username, email, password, privacyConsent} : SignU
         const createdSessionResponse  =  await createSession(createdUser)
         if(createdSessionResponse.status === 'error') return createdSessionResponse
         
-
-
         return {
             status:'success',
             message:'User was registered',
@@ -57,5 +55,15 @@ export async function signIn({email, password} : SignInSchema):Promise<ActionRes
         
     }catch(error){
         return handleErrors(error, {defaultError:'Could not sign in'})
+    }
+}
+export async function signOut():Promise<ActionResponse>{
+    const deleteSessionResponse = await deleteSession()
+    if(deleteSessionResponse.status === 'error') return deleteSessionResponse
+
+    return {
+        status:'success',
+        message:'You logged out',
+        data:undefined as never
     }
 }

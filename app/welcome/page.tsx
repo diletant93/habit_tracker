@@ -4,10 +4,12 @@ import H1 from "../_components/ui/H1";
 import Button from "../_components/ui/Button";
 import Circles from "../_components/ui/Circles";
 import Link from "next/link";
+import SignOutButton from "../_components/auth/SignOutButton";
 
 export default async function Welcome() {
     return (
         <main className="bg-blue-600 flex flex-col items-center h-[100dvh] overflow-hidden">
+            <SignOutButton/>
             <div className="relative h-1/5 max-h-[142px] aspect-square">
                 <Logo className="mb-[13px]" />
             </div>
