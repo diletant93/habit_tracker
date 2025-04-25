@@ -1,4 +1,4 @@
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 import { ActionResponse, ActionResponseStatus, ErrorResponse, SuccessResponse } from "../types/actions";
 
 type ErrorHandlingConfig = {
@@ -19,7 +19,9 @@ export function checkForErrors(responses:ActionResponse<any>[]):ActionResponse |
     const failedResponse = responses.find(response => response.status === 'error')
     return failedResponse? failedResponse : null
 }   
-export function ensureAllSuccess<T>(responses: ActionResponse<T>[]):ActionResponse<SuccessResponse<T>[]> {
+//later to fix
+
+export function ensureAllSuccess<T>(responses: ActionResponse<T>[], schemas:z.ZodType):ActionResponse<SuccessResponse<T>[]> {
       const maybeError = checkForErrors(responses);
       if (maybeError) return {status:'error', message:maybeError.message}
       return {status:'success', data:responses as SuccessResponse<T>[]}

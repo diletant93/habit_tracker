@@ -17,7 +17,7 @@ export const userCreationSchema = z.object({
     salt:z.string().min(1).nullable(),
 })
 export const userSessionSchema = z.object({
-    userid:z.coerce.string().min(1),
+    userId:z.coerce.string().min(1),
     roles:z.array(z.enum(['user','admin'])),
     organizations:z.array(z.enum(['google'])),
     permissions:z.array(z.enum(['view','create','update','delete']))

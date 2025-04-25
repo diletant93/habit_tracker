@@ -8,7 +8,7 @@ type VisibilityToggleProps = {
 }
 export default function VisibilityToggle({ isVisible, className, onClick }: VisibilityToggleProps) {
     return (
-        <button onClick={onClick} className={className} type='button'>
+        <button onClick={onClick} className={cn(className, 'top-[54%] right-4')} type='button'>
             {isVisible ? (
                 <div className='relative'>
                     <Eye className='-mb-0.5 transform rotate-180' />

@@ -1,14 +1,14 @@
-import { OrganizationRecord, organizationSchema, userOrganizationJoinSchema } from "@/app/_validationSchemas/organization";
-import { RoleRecord, roleSchema, userRoleJoinSchema } from "@/app/_validationSchemas/role";
+import { OrganizationRecord} from "@/app/_validationSchemas/organization";
+import { RoleRecord } from "@/app/_validationSchemas/role";
 import { UserRecord, userSchema, UserToCreate } from "@/app/_validationSchemas/user";
 import { validateApiResponse } from "@/app/_validationSchemas/utils";
 import { ActionResponse } from "@/app/types/actions";
 import supabase from "@/app/lib/supabase";
-import { z } from "zod";
-import { getRoleByName } from "./role";
-import { getOrganizationByName } from "./organization";
-import { PermissionRecord, userPermissionsJoinSchema } from "@/app/_validationSchemas/permission";
+import { getRoleByName, getRolesByUserId } from "./role";
+import { getOrganizationByName, getOrganizationsByUserId } from "./organization";
+import { PermissionRecord} from "@/app/_validationSchemas/permission";
 import { ensureAllSuccess, handleErrors } from "@/app/_utils/errorHandlers";
+import { getPermissionsByUserId } from "./permission";
 
 export async function userExists(email:string):Promise<ActionResponse<boolean>>{
     try {
@@ -55,6 +55,33 @@ export async function createUser(userData: UserToCreate):Promise<ActionResponse<
     }
 }
 
+export async function getUser(user:{email:string} | {id:string}):Promise<ActionResponse<UserRecord>>{
+    try {
+        let query = supabase.from('users').select('*')
+        if('id' in user){
+            query = query.eq('id',user.id)
+        }
+        if('email' in user){
+            query = query.eq('email',user.email)
+        }
+        const {data:rawFetchedUser} = await query.single()
+        if(!rawFetchedUser) return {status:'error',message:'Could not fetch the user by the given id or email'}
+
+        const validatedFetchedUserResponse = validateApiResponse(userSchema, rawFetchedUser)
+        if(validatedFetchedUserResponse.status === 'error') return validatedFetchedUserResponse
+
+        const validatedFetchedUser = validatedFetchedUserResponse.data
+        return {
+            status:'success',
+            data:validatedFetchedUser
+        }
+    } catch (error) {
+        return handleErrors(error,{
+            ZodError:'Could not parse fetched user',
+            defaultError:'Unexpected error while fetching user'
+        })
+    }
+}
 export async function createUserRoleOrganization(
     userId:string, 
     roleName:string = 'user', 
@@ -107,91 +134,23 @@ export async function deleteUser(user:{id:string} | {email:string} ):Promise<Act
     }
 }
 
-export async function getRolesByUserId(userId:string):Promise<ActionResponse<RoleRecord[]>>{
-    try {
-        const {data:rawUserRolesJoin, error:rawUserRolesJoinError} = await supabase.from('users_roles_organizations').select('role_id, roles(*)').eq('user_id',userId)
-        if(rawUserRolesJoinError) return {status:'error', message:'Failed fetching user roles'}
-
-        const validatedUserRolesJoinResponse = validateApiResponse(z.array(userRoleJoinSchema),rawUserRolesJoin)
-
-        if(validatedUserRolesJoinResponse.status === 'error') return validatedUserRolesJoinResponse
-
-        const userRoles = validatedUserRolesJoinResponse.data.map(userRoleJoin => userRoleJoin.roles)
-        return {
-            status:'success',
-            data:userRoles
-        }
-
-    } catch (error) {
-        return handleErrors(error,{
-            defaultError:'Unexpected error while fetching user roles',
-            ZodError:'Failed parsing user roles',
-        })
-    }
-}   
-
-export async function getPermissionsByUserId(userId:string):Promise<ActionResponse<PermissionRecord[]>>{
-    try {
-        //get first all the role ids
-        //then go through the roles_permissions table and join the permission_ids with permission based on role_ids
-        const {data:rawUserPermissionsJoin} = await supabase.from('users_roles_organizations').select('role_id, roles_permissions (permission_id, permissions(*))').eq('user_id',userId)
-        console.log('HERE =>>>>>>>>>>>>>>>>>>>>>>>', rawUserPermissionsJoin)
-        const validatedUserPermissionJoinResponse = validateApiResponse(z.array(userPermissionsJoinSchema), rawUserPermissionsJoin)
-        if(validatedUserPermissionJoinResponse.status === 'error') return validatedUserPermissionJoinResponse
-
-        const userPermissions = validatedUserPermissionJoinResponse.data.map(item => item.role_permissions.permissions)
-        return {
-            status:'success',
-            data:userPermissions
-        }
-
-    } catch (error) {
-        return handleErrors(error,{
-            defaultError:'Unexpected error while fetching user organizations',
-            ZodError:'Failed parsing user organizations',
-        })
-    }
-}
-
-export async function getOrganizationsByUserId(userId:string):Promise<ActionResponse<OrganizationRecord[]>>{
-    try {
-        const {data:rawUserOrganizationsJoin, error:rawUserOrganizationsJoinError} = await supabase.from('users_roles_organizations').select('organization_id, organizations(*)').eq('user_id',userId)
-        if(rawUserOrganizationsJoinError) return {status:'error', message:'Failed fetching user organizations'}
-
-        const validatedUserOrganizationsJoinResponse = validateApiResponse(z.array(userOrganizationJoinSchema),rawUserOrganizationsJoin)
-
-        if(validatedUserOrganizationsJoinResponse.status === 'error') return validatedUserOrganizationsJoinResponse
-
-        const userOrganizations = validatedUserOrganizationsJoinResponse.data.map(userOrganizaitonJoin => userOrganizaitonJoin.organizations)
-        return {
-            status:'success',
-            data:userOrganizations
-        }
-
-    } catch (error) {
-        return handleErrors(error,{
-            defaultError:'Unexpected error while fetching user organizations',
-            ZodError:'Failed parsing user organizations',
-        })
-    }
-}
 export async function getUserContext(userId:string):Promise<ActionResponse<{
     roles:RoleRecord[];
     organizations:OrganizationRecord[];
     permissions:PermissionRecord[];
 }>>{
     try {
-        const responses = await Promise.all([
+        const [rolesResponse, organizationsResponse, permissionsResponse] = await Promise.all([
                     getRolesByUserId(userId),
                     getOrganizationsByUserId(userId),
                     getPermissionsByUserId(userId)
                 ]);
 
-        const ensureResponse = ensureAllSuccess(responses)
-        if(ensureResponse.status === 'error') return ensureResponse
+                
+        if(rolesResponse.status === 'error') return rolesResponse
+        if(organizationsResponse.status === 'error') return organizationsResponse
+        if(permissionsResponse.status === 'error') return permissionsResponse
 
-        const [rolesResponse, organizationsResponse, permissionsResponse] = ensureResponse.data
-        
         const roles = rolesResponse.data
         const organizations = organizationsResponse.data
         const permissions = permissionsResponse.data

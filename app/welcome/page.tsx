@@ -5,7 +5,7 @@ import Button from "../_components/ui/Button";
 import Circles from "../_components/ui/Circles";
 import Link from "next/link";
 
-export default function Welcome() {
+export default async function Welcome() {
     return (
         <main className="bg-blue-600 flex flex-col items-center h-[100dvh] overflow-hidden">
             <div className="relative h-1/5 max-h-[142px] aspect-square">

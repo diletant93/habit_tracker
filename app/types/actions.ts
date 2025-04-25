@@ -9,7 +9,6 @@ export type ErrorResponse = {
     status: 'error';
     message?:string;
 }
-
-export type ActionResponse<T = never> = SuccessResponse<T> | ErrorResponse
+export type ActionResponse<T = never> = SuccessResponse<T> | ErrorResponse 
 
 export type ActionToastPayload = Pick<ActionResponse<unknown>, 'status' | 'message'>

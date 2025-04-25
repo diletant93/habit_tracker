@@ -2,8 +2,8 @@
 import { SignInSchema, SignUpSchema } from "../_validationSchemas/auth";
 import { ActionResponse } from "../types/actions";
 import { handleErrors } from "../_utils/errorHandlers";
-import { createUser, deleteUser } from "@/app/lib/auth/service/user";
-import { generateSecretKey, hashPassword } from "@/app/lib/auth/crypto";
+import { createUser, deleteUser, getUser } from "@/app/lib/auth/service/user";
+import { comparePassword, generateSecretKey, hashPassword } from "@/app/lib/auth/crypto";
 import { createSession } from "@/app/lib/auth/service/session";
 
 export async function signUp({username, email, password, privacyConsent} : SignUpSchema):Promise<ActionResponse>{
@@ -15,14 +15,15 @@ export async function signUp({username, email, password, privacyConsent} : SignU
 
         const createdUserResponse = await createUser({name:username, email, password:hashedPassword, salt})
         if(createdUserResponse.status === 'error') {
-            const deleteReponse = await deleteUser({email})
-            return deleteReponse.status === 'error' ? deleteReponse : createdUserResponse
+            const deleteUserResponse = await deleteUser({email})
+            return deleteUserResponse.status === 'error' ? deleteUserResponse : createdUserResponse
         }
         
         const createdUser = createdUserResponse.data
 
         const createdSessionResponse  =  await createSession(createdUser)
         if(createdSessionResponse.status === 'error') return createdSessionResponse
+        
 
 
         return {
@@ -34,10 +35,27 @@ export async function signUp({username, email, password, privacyConsent} : SignU
         return handleErrors(error, {defaultError:'Unexpected error occured while signing up'})
     }
 }
-export async function signIn(formData : SignInSchema):Promise<ActionResponse>{
-    return {
-        status:'success',
-        message:'Success',
-        data:undefined as never
+export async function signIn({email, password} : SignInSchema):Promise<ActionResponse>{
+    try{
+        const userResponse = await getUser({email})
+        if(userResponse.status === 'error') return userResponse
+
+        const {id,salt,password:userHashedPassword} = userResponse.data
+        if(!salt || !userHashedPassword) return {status:'error', message:'This email is associated with a different login method. Try signing in with Google'}
+
+        const isIdenticalPasswords = await comparePassword({inputPassword:password, userHashedPassword,salt})
+        if(!isIdenticalPasswords) return {status:'error', message:'Invalid password'}
+
+        const sessionResponse = await createSession({id})
+        if(sessionResponse.status === 'error') return sessionResponse
+
+        return {
+            status:'success',
+            message:'You logged in',
+            data:undefined as never
+        }
+        
+    }catch(error){
+        return handleErrors(error, {defaultError:'Could not sign in'})
     }
 }
