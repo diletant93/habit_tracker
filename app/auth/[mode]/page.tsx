@@ -1,18 +1,23 @@
 import SocialLogin from "@/app/_components/auth/SocialLogin"
 import AuthForm from "@/app/_components/forms/AuthForm"
+import ClientToast from "@/app/_components/global/ClientToast"
 import H2 from "@/app/_components/ui/H2"
 import Link from "next/link"
 
 type AuthPageProps = {
     params: Promise<{
-        mode: 'sign-in' | 'sign-up'
+        mode: 'sign-in' | 'sign-up',
+    }>;
+    searchParams: Promise<{
+        expired?: boolean
     }>
 }
 export async function generateStaticParams(): Promise<{ mode: 'sign-in' | 'sign-up' }[]> {
     return [{ mode: 'sign-up' }, { mode: 'sign-in' }]
 }
-export default async function AuthPage({ params }: AuthPageProps) {
+export default async function AuthPage({ params, searchParams }: AuthPageProps) {
     const mode = (await params).mode
+    const expired = (await searchParams).expired
     return (
         <div className="h-full flex flex-col">
             <H2 className="mb-9 text-center">
@@ -27,6 +32,7 @@ export default async function AuthPage({ params }: AuthPageProps) {
                 {mode === 'sign-in' && <>Don't have an account? <Link href={'/auth/sign-up'} className="text-blue-700">Sign up</Link></>}
                 {mode === 'sign-up' && <>Already have an account? <Link href={'/auth/sign-in'} className="text-blue-700">Sign in</Link></>}
             </p>
+            <ClientToast message="Your session was expired." type="error" show={!!expired}/>
         </div>
     );
 }
