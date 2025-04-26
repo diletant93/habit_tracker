@@ -35,7 +35,7 @@ export class OAuthClient<T>{
         url.searchParams.set('scope',this.scopes.join(' '))
         return url.toString()
     }
-    async fetchUser(code:string):Promise<ActionResponse<ReturnType<OAuthUserParser<T>>>>{
+    async fetchProfile(code:string):Promise<ActionResponse<ReturnType<OAuthUserParser<T>>>>{
         try {
             const tokenResponse = await this.fetchToken(code)
             if(tokenResponse.status === 'error') return tokenResponse

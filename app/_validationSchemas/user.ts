@@ -7,14 +7,14 @@ export const userSchema = z.object({
     name:z.string().min(2),
     created_at:z.string().datetime({offset:true}),
     id:z.coerce.string(),
-    password:z.string().min(1).nullable(),
-    salt:z.string().min(1).nullable(),
+    password:z.string().min(1).nullable().optional(),
+    salt:z.string().min(1).nullable().optional(),
 })
 export const userCreationSchema = z.object({
     ...userBaseFields,
     name:z.string().min(2),
-    password:z.string().min(1).nullable(),
-    salt:z.string().min(1).nullable(),
+    password:z.string().min(1).nullable().optional(),
+    salt:z.string().min(1).nullable().optional(),
 })
 export const userSessionSchema = z.object({
     userId:z.coerce.string().min(1),
